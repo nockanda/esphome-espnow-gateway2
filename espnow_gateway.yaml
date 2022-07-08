@@ -1,0 +1,78 @@
+esphome:
+  name: nockanda4
+  includes:
+    - nockanda_espnow.h
+
+esp8266:
+  board: esp01_1m
+  
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+
+sensor:
+  - platform: template
+    name: "Type1 Sensor data1"
+    id: type1_data1
+    unit_of_measurement: "%"
+  - platform: template
+    name: "Type1 Sensor data2"
+    id: type1_data2
+    unit_of_measurement: "°C"
+  - platform: template
+    name: "Type2 Sensor data1"
+    id: type2_data1
+    unit_of_measurement: "PPM"
+  - platform: template
+    name: "Type2 Sensor data2"
+    id: type2_data2
+    unit_of_measurement: "°C"
+  - platform: template
+    name: "Type3 Sensor data1"
+    id: type3_data1
+    unit_of_measurement: "ug/m3"
+  - platform: template
+    name: "Type3 Sensor data2"
+    id: type3_data2
+    unit_of_measurement: "ug/m3"
+  - platform: template
+    name: "Type3 Sensor data3"
+    id: type3_data3
+    unit_of_measurement: "ug/m3"
+
+custom_component:
+- lambda: |-
+    NOCKANDA_ESPNOW.begin();
+    NOCKANDA_ESPNOW.set_sensor1([](byte type, float data1, float data2){
+         id(type1_data1).publish_state(data1);
+         id(type1_data2).publish_state(data2);
+    });
+    NOCKANDA_ESPNOW.set_sensor2([](byte type, int data1, int data2){
+         id(type2_data1).publish_state(data1);
+         id(type2_data2).publish_state(data2);
+    });
+    NOCKANDA_ESPNOW.set_sensor3([](byte type, int data1, int data2, int data3){
+         id(type3_data1).publish_state(data1);
+         id(type3_data2).publish_state(data2);
+         id(type3_data3).publish_state(data3);
+    });
+    return {};
+
+ota:
+  password: "5540bdfe29301d5b64f04029f61c5a67"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Nockanda4 Fallback Hotspot"
+    password: "123123123"
+
+captive_portal:
+    
